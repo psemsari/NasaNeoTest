@@ -23,21 +23,6 @@
             background-color: #f1f1f1;
             padding: 10px 0;
         }
-
-        .loader {
-            border: 8px solid #f3f3f3; /* Light grey */
-            border-top: 8px solid #656565; /* Blue */
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            margin: 0 auto;
-            animation: spin 2s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
 </head>
 <body>
@@ -47,50 +32,40 @@
         <input type="submit" value="OK">
     </form>
     <div>
+        {% if error %}
+            <h2>Une erreur est survenue : </h2>
+            <p>{{error}}</p>
+        {% endif %}
         {% for day, value in obj.items %}
             <h2>{{day}}</h2>
             {% for k in value %}
-                <button type="submit" id="{{ k.id }}">{{ k.name }} / {{ k.id }} / {{ k.close_approach_data.0.miss_distance.kilometers}}</button>
+                <button type="submit" id="{{ k.id }}">
+                    <h2>{{ k.name }}</h2>
+                    <p>Taille : {{ k.diameter }} metres</p>
+                    <p>Distance : {{ k.distance }} km</p>
+                    <p>Prochain passage : {{ k.next_approach_date }}</p>
+                </button>
                 <div class="content">
-                    <div class="loader"></div>
+                    <h4>Anciens passages</h4>
+                    <ul>
+                    {% for element in k.lasts_approachs %}
+                        <li>Date : {{ element.date }} / Distance : {{ element.distance }} km</li>
+                    {% endfor %}
+                    </ul>
                 </div>
                 {% endfor %}
         {% endfor %}
     </div>
     <script>
-        function getCookie(name) {
-            const cookies = document.cookie.split('; ')
-            const value = cookies
-                .find(c => c.startsWith(name + "="))
-                ?.split('=')[1]
-            if (value === undefined) {
-                return null
-            } 
-            return decodeURIComponent(value)
-        }
-
         const buttons = document.querySelectorAll('button')
         buttons.forEach((button) => {
             button.addEventListener('click', function () {
-
-
                 content = button.nextElementSibling
-                if (content.style.display === "block") { //if tag loaded just no recal
+                if (content.style.display === "block") {
                     content.style.display = "none";
                 } else {
                     content.style.display = "block";
-                    const r = fetch('/moreinfo', {
-                        method: 'POST',
-                        headers: {'X-CSRFToken': getCookie('csrftoken'), 'content-type': 'application/x-www-form-urlencoded'},
-                        body: 'id='+ button.getAttribute('id')
-                    })
-                    .then( (res) => {
-                        res.json().then((obj) => {
-                            content.innerText = obj.designation
-                        })
-                    })
                 }
-
             })
         })
     </script>
