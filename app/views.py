@@ -1,9 +1,8 @@
 from django.shortcuts import render
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest
 from requests import get, Response
 from django.conf import settings
 from django import forms
-import json
 
 #afficher son nom, sa taille estimée, la distance à laquelle il passe de la terre et la date de son prochain passage
 #Au clic sur un astéroïde, on veut afficher les 5 dernières fois ou l'astéroïde est passé proche de la terre avec
@@ -18,6 +17,9 @@ class DatesNeo(forms.Form):
     end = forms.DateField(input_formats=['%Y-%m-%d']) #no more than 7 days
 
 def get_lasts_approachs(object: dict, approachs: list):
+    """Retourne la liste des 5 dernières fois où un objet 'object' est passé près de la terre
+        Si il n'y en a moins de 5, retourne le restes
+    """
     five_lasts = []
     index = approachs.index(object[0])
     if (index <= 5):
@@ -30,47 +32,59 @@ def get_lasts_approachs(object: dict, approachs: list):
     return res
 
 def get_next_approach_date(object: dict, approachs: list):
+    """Retourne la date du prochain passage de l'objet 'object' près de la terre
+        Si il n'y en a pas, retourne None
+    """
     index = approachs.index(object[0])
     lenght = len(approachs)
     if (lenght == index + 1):
         return None
     return approachs[index + 1].get('close_approach_date')
 
-def getmoreinfo(v: list) -> list:
-    res = []
-    for element in v:
-        req: Response = get(element.get('links').get('self'))
-        if not req.status_code == 200:
+def getmoreinfo(list_object_today: list) -> list:
+    """Retourne une liste avec les différentes informations correspondant sur les objets du jour
+        Si il y a une erreur avec la requete, retourne None
+    """
+    resultat = []
+    for object in list_object_today:
+        requete: Response = get(object.get('links').get('self'))
+        if not requete.status_code == 200:
             return (None)
-        req = req.json()
-        res.append({
-            'name': req.get('name'),
-            'diameter': req.get('estimated_diameter').get('meters').get('estimated_diameter_max'),
-            'distance': element.get('close_approach_data')[0].get('miss_distance').get('kilometers'),
-            'next_approach_date': get_next_approach_date(element.get('close_approach_data'), req.get('close_approach_data')),
-            'lasts_approachs': get_lasts_approachs(element.get('close_approach_data'), req.get('close_approach_data'))
+        requete = requete.json()
+        resultat.append({
+            'name': requete.get('name'),
+            'diameter': requete.get('estimated_diameter').get('meters').get('estimated_diameter_max'),
+            'distance': object.get('close_approach_data')[0].get('miss_distance').get('kilometers'),
+            'next_approach_date': get_next_approach_date(object.get('close_approach_data'), requete.get('close_approach_data')),
+            'lasts_approachs': get_lasts_approachs(object.get('close_approach_data'), requete.get('close_approach_data'))
         })
-    return res
+    return resultat
 
 def index(request: HttpRequest):
-    """Return Test of the nasa api"""
-
-    if request.method == 'GET':
-        return (render(request, 'base.html', {'form': DatesNeo()} ))
+    """Retourn le rendu de la page"""
 
     if request.method == 'POST':
         form = DatesNeo(request.POST)
+
+        #Si le formulaire n'est pas valide, on renvend le formulaire avec les erreurs
         if not form.is_valid():
             return (render(request, 'base.html', {'form': form} ))
 
         start = form.data['start']
-        Huston: Response = get('https://api.nasa.gov/neo/rest/v1/feed?start_date=' + start + '&end_date=' + form.data['end'] + '&api_key=' + settings.SECRET_NASA)
-        if not Huston.status_code == 200:
-            return (render(request, 'base.html', {'form': form, 'error': Huston.json()['error_message']} ))
-        obj = Huston.json()
+        end = form.data['end']
+
+        Houston: Response = get('https://api.nasa.gov/neo/rest/v1/feed?start_date=' + start + '&end_date=' + end + '&api_key=' + settings.SECRET_NASA)
+        if not Houston.status_code == 200:
+            #houston, on a un problème
+            return (render(request, 'base.html', {'form': form, 'error': Houston.json()['error_message']} ))
+        
+        obj = Houston.json()
         dico: dict = obj['near_earth_objects']
         res = {}
-        for k, v in dico.items():
-            res.update({k: getmoreinfo(v)})
-        print(res)
+        for date, value in dico.items():
+            res.update({date: getmoreinfo(value)})
+
         return (render(request, 'base.html', {'form': form, 'obj': res}))#HttpResponse(json.dumps(res), content_type='application/json')
+
+    #retourn un formulaire vite pour tout autres types de requêtes
+    return (render(request, 'base.html', {'form': DatesNeo()} ))

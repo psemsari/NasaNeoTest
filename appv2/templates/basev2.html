@@ -1,0 +1,53 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NasaNeoVisualize</title>
+    <link href="{% static 'style.css' %}" rel="stylesheet">
+</head>
+<body>
+    <h1>Nasa Near Earth Object 👨‍🚀🚀 (V2)</h1>
+    <h2>Description :</h2>
+    <p>Ce petit projet permet de connaitre les différents objets prés de la Terre entre deux dates données.</p>
+    <p>Grâce à L'API mise à disposition de la NASA, on peut connaitre le nom, la taille estimé et les différents passages proche de la Terre</p>
+    <p>⚠️ Version 2, une requête pour obtenir plus d'informations sur un objet est envoyé après avoir cliqué.
+    <p>❗ Les deux dates ne doivent pas être différentes de plus de 7 jours</p>
+    <form action="/v2" method="post">
+        <h4>Date au format: "YYYY-MM-DD"</h4>
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="OK">
+    </form>
+    <div>
+        {% if error %}
+            <h2>Une erreur est survenue : </h2>
+            <p>{{error}}</p>
+        {% endif %}
+        {% for day, value in obj.items %}
+            <h2>{{day}}</h2>
+            {% for k in value %}
+                <button type="submit" id="{{ k.id }}" day="{{ day }}">
+                    <h2>{{ k.name }}</h2>
+                    <p>Taille : {{ k.diameter }} metres</p>
+                    <p>Distance : {{ k.distance }} km</p>
+                </button>
+                <div class="content" load="false">
+                    <div class="loader"></div>
+                </div>
+                {% endfor %}
+        {% endfor %}
+    </div>
+    <template id="template">
+        <div class="content" load="true" style="display: block;">
+            <h4></h4>
+            <h4>Anciens passages:</h4>
+            <ul>
+            </ul>
+        </div>
+    </template>
+    <script src="{% static 'script.js' %}"></script>
+</body>
+</html>

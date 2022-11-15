@@ -34,14 +34,16 @@
     <h2>Description :</h2>
     <p>Ce petit projet permet de connaitre les différents objets prés de la Terre entre deux dates données.</p>
     <p>Grâce à L'API mise à disposition de la NASA, on peut connaitre le nom, la taille estimé et les différents passages proche de la Terre</p>
-    <p>⚠️ Les deux dates ne doivent pas être différentes de plus de 7 jours</p>
-    <form action="/" method="post">
+    <p>⚠️ L'API utilisé est lente, plus il y a de jours plus la page est longue à charger. (environ 10 secondes pour un jour)</p>
+    <p>En effet, pour avoir les prochains passages et ancien passages des objets nous devons faire une requête à L'API pour chaque objet du jour</p>
+    <p>Une version 2 est disponible <a href="./v2">ici</a> mais les informations données sont un peu différentes dû au format de l'api de la NASA</p>
+    <p>❗ Les deux dates ne doivent pas être différentes de plus de 7 jours</p>
+    <form action="/v1" method="post">
         <h4>Date au format: "YYYY-MM-DD"</h4>
         {% csrf_token %}
         {{ form }}
         <input type="submit" value="OK">
     </form>
-    <h4>Resultat</h4>
     <div>
         {% if error %}
             <h2>Une erreur est survenue : </h2>
@@ -50,7 +52,7 @@
         {% for day, value in obj.items %}
             <h2>{{day}}</h2>
             {% for k in value %}
-                <button type="submit" id="{{ k.id }}">
+                <button type="submit">
                     <h2>{{ k.name }}</h2>
                     <p>Taille : {{ k.diameter }} metres</p>
                     <p>Distance : {{ k.distance }} km</p>

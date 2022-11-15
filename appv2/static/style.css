@@ -1,0 +1,36 @@
+* {
+    font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+}
+
+div {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+}
+
+button {
+    width: 100%;
+}
+
+.content {
+    width: 100%;
+    display: none;
+    overflow: hidden;
+    background-color: #f1f1f1;
+    padding: 10px 0;
+}
+
+.loader {
+    border: 8px solid #f3f3f3; /* Light grey */
+    border-top: 8px solid #656565; /* Blue */
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    margin: 0 auto;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
