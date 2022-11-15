@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NasaNeoVisualize</title>
     <style>
+        * {
+            font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+        }
+
         div {
             width: 50%;
             display: flex;
@@ -26,11 +30,18 @@
     </style>
 </head>
 <body>
+    <h1>Nasa Near Earth Object 👨‍🚀🚀 (V1)</h1>
+    <h2>Description :</h2>
+    <p>Ce petit projet permet de connaitre les différents objets prés de la Terre entre deux dates données.</p>
+    <p>Grâce à L'API mise à disposition de la NASA, on peut connaitre le nom, la taille estimé et les différents passages proche de la Terre</p>
+    <p>⚠️ Les deux dates ne doivent pas être différentes de plus de 7 jours</p>
     <form action="/" method="post">
+        <h4>Date au format: "YYYY-MM-DD"</h4>
         {% csrf_token %}
         {{ form }}
         <input type="submit" value="OK">
     </form>
+    <h4>Resultat</h4>
     <div>
         {% if error %}
             <h2>Une erreur est survenue : </h2>
@@ -57,6 +68,7 @@
         {% endfor %}
     </div>
     <script>
+        //simple fonction pour avoir un menu déroulant du contenu
         const buttons = document.querySelectorAll('button')
         buttons.forEach((button) => {
             button.addEventListener('click', function () {

@@ -10,11 +10,12 @@ import json
 # sa date et la distance à laquelle il est passé
 
 class DatesNeo(forms.Form):
+    class Meta:
+        labels = {
+            's'
+        }
     start = forms.DateField(input_formats=['%Y-%m-%d'])
     end = forms.DateField(input_formats=['%Y-%m-%d']) #no more than 7 days
-
-#name, estimates_diameter, close_approche_day(miss_distance.kilometers), close_approche_next(date)
-#close_approche_*-5(date, miss_distance.kilometers)
 
 def get_lasts_approachs(object: dict, approachs: list):
     five_lasts = []
@@ -71,5 +72,5 @@ def index(request: HttpRequest):
         res = {}
         for k, v in dico.items():
             res.update({k: getmoreinfo(v)})
-
+        print(res)
         return (render(request, 'base.html', {'form': form, 'obj': res}))#HttpResponse(json.dumps(res), content_type='application/json')
