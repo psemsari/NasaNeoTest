@@ -11,8 +11,11 @@
 `export SECRET_NASA=clé_nasa_dans_le_mail`
 
 `git clone https://github.com/psemsari/NasaNeoTest.git`
+
 Exécuter le fichier `start.sh` ou les commandes ci-dessous
+
 `pip install -r requirements.txt`
+
 `python3 manage.py runserver localhost:8000`
 (vous pouvez changer le port par défault)
 
