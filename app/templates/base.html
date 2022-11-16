@@ -38,7 +38,7 @@
     <p>En effet, pour avoir les prochains passages et ancien passages des objets nous devons faire une requête à L'API pour chaque objet du jour</p>
     <p>Une version 2 est disponible <a href="./v2">ici</a> mais les informations données sont un peu différentes dû au format de l'api de la NASA</p>
     <p>❗ Les deux dates ne doivent pas être différentes de plus de 7 jours</p>
-    <form action="/v1" method="post">
+    <form action="/" method="post">
         <h4>Date au format: "YYYY-MM-DD"</h4>
         {% csrf_token %}
         {{ form }}
