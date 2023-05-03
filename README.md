@@ -6,9 +6,7 @@
 
 - Python 3.2 LTS ou supérieur
 - git
-- exporter les clés API
-`export SECRET_KEY=clé_django_dans_le_mail`
-`export SECRET_NASA=clé_nasa_dans_le_mail`
+- exporter les clés API `SECRET_KEY` et `SECRET_NASA`
 
 `git clone https://github.com/psemsari/NasaNeoTest.git`
 
